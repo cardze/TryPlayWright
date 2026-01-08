@@ -1,0 +1,126 @@
+@page
+@model SelectorsModel
+@{
+    ViewData["Title"] = "Selectors & Locators";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Playwright supports various selector strategies to locate elements on a page.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Example Elements</h3>
+            
+            <!-- CSS Selectors -->
+            <div class="card mb-3">
+                <div class="card-header">CSS Selectors</div>
+                <div class="card-body">
+                    <button id="btn-primary" class="btn btn-primary">Primary Button</button>
+                    <button class="btn btn-secondary test-button">Secondary Button</button>
+                    <div class="content-box" data-testid="content-box">Content Box</div>
+                </div>
+            </div>
+
+            <!-- Text Selectors -->
+            <div class="card mb-3">
+                <div class="card-header">Text Selectors</div>
+                <div class="card-body">
+                    <button class="btn btn-info">Click Me</button>
+                    <button class="btn btn-success">Submit Form</button>
+                    <a href="#" class="btn btn-link">Learn More</a>
+                </div>
+            </div>
+
+            <!-- Role-based Selectors -->
+            <div class="card mb-3">
+                <div class="card-header">Role-based Selectors</div>
+                <div class="card-body">
+                    <button role="button" aria-label="Save">💾 Save</button>
+                    <input type="text" placeholder="Enter name" aria-label="Name input" />
+                    <h4>Section Heading</h4>
+                </div>
+            </div>
+
+            <!-- XPath Examples -->
+            <div class="card mb-3">
+                <div class="card-header">XPath Targets</div>
+                <div class="card-body">
+                    <ul id="item-list">
+                        <li>First Item</li>
+                        <li>Second Item</li>
+                        <li class="highlighted">Third Item (Highlighted)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Selector Examples</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> These examples show how to locate elements using Playwright in JavaScript.
+            </div>
+
+            <pre><code class="language-javascript">// CSS Selectors
+await page.locator('#btn-primary').click();
+await page.locator('.test-button').click();
+await page.locator('[data-testid="content-box"]').click();
+
+// Text Selectors
+await page.getByText('Click Me').click();
+await page.getByText('Submit Form').click();
+
+// Role-based Selectors
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByRole('textbox', { name: 'Name input' }).fill('John');
+await page.getByRole('heading', { name: 'Section Heading' });
+
+// XPath Selectors
+await page.locator('xpath=//li[@@class="highlighted"]').click();
+await page.locator('xpath=//ul[@@id="item-list"]/li[2]').click();
+
+// Chaining Selectors
+await page.locator('.card').locator('button').first().click();
+
+// Filter by text
+await page.locator('button').filter({ hasText: 'Submit' }).click();
+
+// Get by label
+await page.getByLabel('Name input').fill('Jane');
+
+// Get by placeholder
+await page.getByPlaceholder('Enter name').fill('Bob');</code></pre>
+
+            <h4 class="mt-4">Selector Best Practices</h4>
+            <ul>
+                <li>Prefer user-facing attributes (role, text, label)</li>
+                <li>Use test IDs (data-testid) for dynamic content</li>
+                <li>Avoid brittle selectors (deep CSS paths)</li>
+                <li>Use getByRole for accessibility-friendly tests</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add some interactivity for testing
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.classList.contains('btn-secondary')) {
+                    e.preventDefault();
+                    this.classList.add('btn-success');
+                    this.innerHTML += ' ✓';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                }
+            });
+        });
+    </script>
+}

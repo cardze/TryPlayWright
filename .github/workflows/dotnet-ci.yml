@@ -1,0 +1,63 @@
+name: .NET CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore PlaywrightDemo/PlaywrightDemo.csproj
+      
+    - name: Build
+      run: dotnet build PlaywrightDemo/PlaywrightDemo.csproj --configuration Release --no-restore
+      
+    - name: Test
+      run: dotnet test PlaywrightDemo/PlaywrightDemo.csproj --configuration Release --no-build --verbosity normal
+      
+    - name: Publish
+      run: dotnet publish PlaywrightDemo/PlaywrightDemo.csproj --configuration Release --no-build --output ./publish
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-demo-app
+        path: ./publish
+        retention-days: 30
+
+  deploy:
+    name: Deploy (Example)
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: playwright-demo-app
+        path: ./publish
+        
+    - name: Display structure of downloaded files
+      run: ls -R ./publish
+      
+    - name: Deploy to staging
+      run: |
+        echo "Deployment step would go here"
+        echo "Examples: Azure Web App, AWS, Docker, etc."
+        echo "Published files are ready in ./publish directory"

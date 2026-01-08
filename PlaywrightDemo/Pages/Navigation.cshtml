@@ -1,0 +1,266 @@
+@page
+@model NavigationModel
+@{
+    ViewData["Title"] = "Navigation & Waits";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Explore navigation patterns and waiting strategies in Playwright.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Dynamic Content Examples</h3>
+            
+            <!-- Delayed Content -->
+            <div class="card mb-3">
+                <div class="card-header">Delayed Content Loading</div>
+                <div class="card-body">
+                    <button id="load-delayed" class="btn btn-primary">Load Content (2s delay)</button>
+                    <div id="delayed-content" class="mt-3 alert alert-info" style="display: none;">
+                        This content appeared after a delay! ⏰
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Elements -->
+            <div class="card mb-3">
+                <div class="card-header">Dynamic Element Creation</div>
+                <div class="card-body">
+                    <button id="add-element" class="btn btn-success">Add New Element</button>
+                    <button id="remove-element" class="btn btn-danger">Remove Last Element</button>
+                    <div id="dynamic-container" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="card mb-3">
+                <div class="card-header">Progress Indicator</div>
+                <div class="card-body">
+                    <button id="start-progress" class="btn btn-info">Start Progress</button>
+                    <div class="progress mt-3" style="display: none;" id="progress-container">
+                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div id="progress-complete" class="alert alert-success mt-2" style="display: none;">
+                        Progress Complete! ✓
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="card mb-3">
+                <div class="card-header">Loading States</div>
+                <div class="card-body">
+                    <button id="fetch-data" class="btn btn-warning">Fetch Data</button>
+                    <div id="spinner" class="mt-3" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="fetched-data" class="mt-3 alert alert-success" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="card mb-3">
+                <div class="card-header">Navigation Links</div>
+                <div class="card-body">
+                    <a href="/Index" class="btn btn-link">Home Page</a>
+                    <a href="/Forms" class="btn btn-link">Forms Page</a>
+                    <a href="/Interactions" class="btn btn-link">Interactions Page</a>
+                    <a href="#section-below" class="btn btn-link">Scroll to Section</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Navigation Examples</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Playwright has built-in smart waiting mechanisms.
+            </div>
+
+            <pre><code class="language-javascript">// Basic navigation
+await page.goto('https://example.com');
+await page.goto('https://example.com', { 
+    waitUntil: 'networkidle' 
+});
+
+// Wait options: 'load', 'domcontentloaded', 'networkidle'
+await page.goto('https://example.com', { 
+    waitUntil: 'domcontentloaded',
+    timeout: 30000 
+});
+
+// Navigation with authentication
+await page.goto('https://example.com', {
+    waitUntil: 'load',
+    referer: 'https://google.com'
+});
+
+// Go back and forward
+await page.goBack();
+await page.goForward();
+await page.reload();
+
+// Wait for element to be visible
+await page.locator('#delayed-content').waitFor({ state: 'visible' });
+
+// Wait for element to be hidden
+await page.locator('#spinner').waitFor({ state: 'hidden' });
+
+// Wait for element to be attached to DOM
+await page.locator('#dynamic-container div').waitFor({ state: 'attached' });
+
+// Wait for specific text
+await page.getByText('Progress Complete!').waitFor();
+
+// Wait for navigation
+await Promise.all([
+    page.waitForNavigation(),
+    page.locator('a[href="/Forms"]').click()
+]);
+
+// Wait for URL
+await page.waitForURL('**/Forms');
+await page.waitForURL(/.*Forms.*/);
+
+// Wait for load state
+await page.waitForLoadState('load');
+await page.waitForLoadState('domcontentloaded');
+await page.waitForLoadState('networkidle');
+
+// Wait for selector
+await page.waitForSelector('#delayed-content', { 
+    state: 'visible',
+    timeout: 5000 
+});
+
+// Wait for function
+await page.waitForFunction(() => {
+    return document.querySelector('#progress-bar')
+        .style.width === '100%';
+});
+
+// Wait for timeout (not recommended)
+await page.waitForTimeout(2000);
+
+// Wait for request/response
+await page.waitForRequest('**/api/data');
+await page.waitForResponse('**/api/data');
+
+// Custom wait condition
+await page.waitForFunction(() => 
+    window.innerWidth < 1000
+);
+
+// Check if element is visible
+const isVisible = await page.locator('#delayed-content').isVisible();
+
+// Wait for multiple conditions
+await Promise.all([
+    page.waitForSelector('#element1'),
+    page.waitForSelector('#element2'),
+    page.waitForLoadState('networkidle')
+]);</code></pre>
+
+            <h4 class="mt-4">Auto-Waiting Features</h4>
+            <ul>
+                <li>Waits for elements to be visible and enabled</li>
+                <li>Waits for animations to complete</li>
+                <li>Auto-retries assertions</li>
+                <li>Handles race conditions automatically</li>
+                <li>Configurable timeouts and wait strategies</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="section-below" class="mt-5 p-4 bg-light border">
+        <h3>Scrolled Section</h3>
+        <p>You've scrolled to this section! Playwright can also scroll programmatically.</p>
+        <code>await page.locator('#section-below').scrollIntoViewIfNeeded();</code>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Delayed Content
+        document.getElementById('load-delayed').addEventListener('click', function() {
+            this.disabled = true;
+            this.textContent = 'Loading...';
+            setTimeout(() => {
+                document.getElementById('delayed-content').style.display = 'block';
+                this.textContent = 'Content Loaded!';
+                this.classList.replace('btn-primary', 'btn-success');
+            }, 2000);
+        });
+
+        // Dynamic Elements
+        let elementCount = 0;
+        document.getElementById('add-element').addEventListener('click', function() {
+            elementCount++;
+            const div = document.createElement('div');
+            div.className = 'alert alert-primary mt-2 dynamic-item';
+            div.textContent = `Dynamic Element #${elementCount}`;
+            document.getElementById('dynamic-container').appendChild(div);
+        });
+
+        document.getElementById('remove-element').addEventListener('click', function() {
+            const container = document.getElementById('dynamic-container');
+            const items = container.querySelectorAll('.dynamic-item');
+            if (items.length > 0) {
+                container.removeChild(items[items.length - 1]);
+                elementCount--;
+            }
+        });
+
+        // Progress Bar
+        document.getElementById('start-progress').addEventListener('click', function() {
+            this.disabled = true;
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressComplete = document.getElementById('progress-complete');
+            
+            progressContainer.style.display = 'block';
+            progressComplete.style.display = 'none';
+            progressBar.style.width = '0%';
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 10;
+                progressBar.style.width = width + '%';
+                
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        progressComplete.style.display = 'block';
+                        document.getElementById('start-progress').disabled = false;
+                    }, 500);
+                }
+            }, 300);
+        });
+
+        // Fetch Data
+        document.getElementById('fetch-data').addEventListener('click', function() {
+            this.disabled = true;
+            const spinner = document.getElementById('spinner');
+            const dataDiv = document.getElementById('fetched-data');
+            
+            spinner.style.display = 'block';
+            dataDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                dataDiv.textContent = 'Data loaded successfully at ' + new Date().toLocaleTimeString();
+                dataDiv.style.display = 'block';
+                this.disabled = false;
+            }, 2000);
+        });
+    </script>
+}
