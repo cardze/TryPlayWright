@@ -1,0 +1,251 @@
+@page
+@model FormsModel
+@{
+    ViewData["Title"] = "Form Handling";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Demonstrate form interactions with various input types.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Sample Form</h3>
+            
+            <form id="demo-form">
+                <!-- Text Inputs -->
+                <div class="card mb-3">
+                    <div class="card-header">Text Inputs</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkboxes and Radio Buttons -->
+                <div class="card mb-3">
+                    <div class="card-header">Checkboxes & Radio Buttons</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Interests</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="coding" id="interest-coding">
+                                <label class="form-check-label" for="interest-coding">Coding</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="testing" id="interest-testing">
+                                <label class="form-check-label" for="interest-testing">Testing</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="automation" id="interest-automation">
+                                <label class="form-check-label" for="interest-automation">Automation</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Experience Level</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="experience" value="beginner" id="exp-beginner">
+                                <label class="form-check-label" for="exp-beginner">Beginner</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="experience" value="intermediate" id="exp-intermediate">
+                                <label class="form-check-label" for="exp-intermediate">Intermediate</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="experience" value="expert" id="exp-expert">
+                                <label class="form-check-label" for="exp-expert">Expert</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Dropdown -->
+                <div class="card mb-3">
+                    <div class="card-header">Dropdown Selection</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <select class="form-select" id="country" name="country">
+                                <option value="">Choose...</option>
+                                <option value="us">United States</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="ca">Canada</option>
+                                <option value="au">Australia</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="browser" class="form-label">Preferred Browser</label>
+                            <select class="form-select" id="browser" name="browser" multiple size="4">
+                                <option value="chromium">Chromium</option>
+                                <option value="firefox">Firefox</option>
+                                <option value="webkit">WebKit</option>
+                                <option value="edge">Edge</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Textarea -->
+                <div class="card mb-3">
+                    <div class="card-header">Text Area</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="comments" class="form-label">Comments</label>
+                            <textarea class="form-control" id="comments" name="comments" rows="3" 
+                                      placeholder="Enter your comments..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="card mb-3">
+                    <div class="card-header">File Upload</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="file-upload" class="form-label">Choose file</label>
+                            <input class="form-control" type="file" id="file-upload">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">Submit Form</button>
+                <button type="reset" class="btn btn-secondary">Reset Form</button>
+            </form>
+
+            <div id="form-result" class="alert alert-success mt-3" style="display: none;"></div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Form Examples</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Playwright makes form automation easy and reliable.
+            </div>
+
+            <pre><code class="language-javascript">// Fill text inputs
+await page.locator('#name').fill('John Doe');
+await page.locator('#email').fill('john@example.com');
+await page.locator('#password').fill('SecurePass123');
+
+// Alternative: use getByLabel
+await page.getByLabel('Name').fill('Jane Doe');
+await page.getByLabel('Email').fill('jane@example.com');
+
+// Check/Uncheck checkboxes
+await page.locator('#interest-coding').check();
+await page.locator('#interest-testing').check();
+await page.locator('#interest-automation').uncheck();
+
+// Check if checkbox is checked
+const isChecked = await page.locator('#interest-coding').isChecked();
+
+// Select radio button
+await page.locator('#exp-intermediate').check();
+
+// Select from dropdown
+await page.locator('#country').selectOption('us');
+await page.locator('#country').selectOption({ label: 'Canada' });
+await page.locator('#country').selectOption({ value: 'uk' });
+
+// Multiple select
+await page.locator('#browser').selectOption(['chromium', 'firefox']);
+
+// Fill textarea
+await page.locator('#comments').fill('This is a test comment');
+
+// Upload file
+await page.locator('#file-upload').setInputFiles('path/to/file.pdf');
+
+// Upload multiple files
+await page.locator('#file-upload').setInputFiles([
+    'file1.pdf',
+    'file2.pdf'
+]);
+
+// Remove uploaded files
+await page.locator('#file-upload').setInputFiles([]);
+
+// Submit form
+await page.locator('button[type="submit"]').click();
+
+// Alternative: submit using form element
+await page.locator('#demo-form').evaluate(form => form.submit());
+
+// Get input value
+const nameValue = await page.locator('#name').inputValue();
+
+// Get selected option
+const country = await page.locator('#country').inputValue();
+
+// Wait for form submission
+await Promise.all([
+    page.waitForNavigation(),
+    page.locator('button[type="submit"]').click()
+]);</code></pre>
+
+            <h4 class="mt-4">Form Best Practices</h4>
+            <ul>
+                <li>Use fill() instead of type() for better performance</li>
+                <li>Prefer getByLabel() for accessibility-friendly tests</li>
+                <li>Always wait for navigation after form submission</li>
+                <li>Validate form state before and after interactions</li>
+                <li>Use selectOption() with different strategies (value, label, index)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('demo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            const interests = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                interests.push(cb.value);
+            });
+            
+            const browsers = Array.from(document.getElementById('browser').selectedOptions)
+                .map(option => option.value);
+            
+            const resultDiv = document.getElementById('form-result');
+            resultDiv.innerHTML = `
+                <strong>Form Submitted Successfully!</strong><br>
+                <strong>Name:</strong> ${data.name || 'N/A'}<br>
+                <strong>Email:</strong> ${data.email || 'N/A'}<br>
+                <strong>Country:</strong> ${data.country || 'N/A'}<br>
+                <strong>Experience:</strong> ${data.experience || 'N/A'}<br>
+                <strong>Interests:</strong> ${interests.join(', ') || 'None'}<br>
+                <strong>Browsers:</strong> ${browsers.join(', ') || 'None'}<br>
+                <strong>Comments:</strong> ${data.comments || 'None'}
+            `;
+            resultDiv.style.display = 'block';
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+}

@@ -1,0 +1,88 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Playwright Demo";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Playwright Functionality Demo</h1>
+    <p class="lead">Explore various Playwright features and capabilities</p>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🎯 Selectors & Locators</h5>
+                    <p class="card-text">Demonstrate various ways to select elements using CSS, XPath, text, and more.</p>
+                    <a asp-page="/Selectors" class="btn btn-primary">Try Selectors</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🖱️ User Interactions</h5>
+                    <p class="card-text">Test clicks, typing, mouse movements, and keyboard interactions.</p>
+                    <a asp-page="/Interactions" class="btn btn-primary">Try Interactions</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📝 Form Handling</h5>
+                    <p class="card-text">Work with input fields, checkboxes, radio buttons, and dropdowns.</p>
+                    <a asp-page="/Forms" class="btn btn-primary">Try Forms</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🚀 Navigation & Waits</h5>
+                    <p class="card-text">Explore page navigation, waiting strategies, and dynamic content.</p>
+                    <a asp-page="/Navigation" class="btn btn-primary">Try Navigation</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📸 Screenshots & Traces</h5>
+                    <p class="card-text">Learn about capturing screenshots and generating test traces.</p>
+                    <a asp-page="/Screenshots" class="btn btn-primary">Try Screenshots</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🎭 Dialog & Alerts</h5>
+                    <p class="card-text">Handle alerts, confirms, prompts, and custom dialogs.</p>
+                    <a asp-page="/Dialogs" class="btn btn-primary">Try Dialogs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h2>About This Demo</h2>
+    <p>This application demonstrates the key features of Playwright, a powerful end-to-end testing framework. Each section provides interactive examples that can be automated using Playwright.</p>
+    
+    <h4>What is Playwright?</h4>
+    <ul>
+        <li>Cross-browser automation library (Chromium, Firefox, WebKit)</li>
+        <li>Supports multiple programming languages (JavaScript, TypeScript, Python, .NET, Java)</li>
+        <li>Reliable auto-wait and retry mechanisms</li>
+        <li>Powerful selectors and locators</li>
+        <li>Network interception and mocking capabilities</li>
+    </ul>
+</div>

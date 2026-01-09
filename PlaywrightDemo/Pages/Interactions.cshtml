@@ -1,0 +1,198 @@
+@page
+@model InteractionsModel
+@{
+    ViewData["Title"] = "User Interactions";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Test various user interactions that Playwright can automate.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Interactive Elements</h3>
+            
+            <!-- Click Interactions -->
+            <div class="card mb-3">
+                <div class="card-header">Click Events</div>
+                <div class="card-body">
+                    <button id="single-click" class="btn btn-primary mb-2">Single Click</button>
+                    <button id="double-click" class="btn btn-info mb-2">Double Click</button>
+                    <button id="right-click" class="btn btn-warning mb-2">Right Click</button>
+                    <div id="click-result" class="alert alert-secondary mt-2" style="min-height: 50px;">
+                        Interaction results will appear here
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hover Interactions -->
+            <div class="card mb-3">
+                <div class="card-header">Hover Effects</div>
+                <div class="card-body">
+                    <div id="hover-box" class="p-3 border" style="background-color: #f8f9fa; transition: all 0.3s;">
+                        Hover over me!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drag and Drop -->
+            <div class="card mb-3">
+                <div class="card-header">Drag & Drop</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div id="drag-source" class="p-3 border bg-primary text-white text-center" draggable="true">
+                                Drag me
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div id="drop-target" class="p-3 border bg-light text-center" style="min-height: 100px;">
+                                Drop here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Interactions -->
+            <div class="card mb-3">
+                <div class="card-header">Keyboard Input</div>
+                <div class="card-body">
+                    <input type="text" id="keyboard-input" class="form-control mb-2" placeholder="Type something...">
+                    <div id="keyboard-output" class="alert alert-info">
+                        Start typing to see output
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Interaction Examples</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Playwright provides reliable auto-waiting for elements.
+            </div>
+
+            <pre><code class="language-javascript">// Click Interactions
+await page.locator('#single-click').click();
+await page.locator('#double-click').dblclick();
+await page.locator('#right-click').click({ button: 'right' });
+
+// Click with modifiers
+await page.locator('button').click({ modifiers: ['Shift'] });
+
+// Hover
+await page.locator('#hover-box').hover();
+
+// Drag and Drop
+await page.locator('#drag-source').dragTo(
+    page.locator('#drop-target')
+);
+
+// Type text
+await page.locator('#keyboard-input').fill('Hello World');
+await page.locator('#keyboard-input').type('Slow typing', { delay: 100 });
+
+// Press keyboard keys
+await page.keyboard.press('Enter');
+await page.keyboard.press('Control+A');
+await page.keyboard.press('ArrowDown');
+
+// Focus and blur
+await page.locator('#keyboard-input').focus();
+await page.locator('#keyboard-input').blur();
+
+// Clear input
+await page.locator('#keyboard-input').clear();
+
+// Upload file
+await page.locator('input[type="file"]').setInputFiles('path/to/file.pdf');
+
+// Multiple clicks
+await page.locator('button').click({ clickCount: 3 });
+
+// Force click (bypass actionability checks)
+await page.locator('button').click({ force: true });
+
+// Click at position
+await page.locator('canvas').click({ position: { x: 100, y: 200 } });</code></pre>
+
+            <h4 class="mt-4">Interaction Features</h4>
+            <ul>
+                <li>Auto-wait for elements to be actionable</li>
+                <li>Automatic scrolling into view</li>
+                <li>Handles overlays and animations</li>
+                <li>Retry mechanisms for flaky interactions</li>
+                <li>Support for keyboard modifiers (Ctrl, Shift, Alt)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Single Click
+        document.getElementById('single-click').addEventListener('click', function() {
+            document.getElementById('click-result').textContent = 'Single click detected!';
+        });
+
+        // Double Click
+        document.getElementById('double-click').addEventListener('dblclick', function() {
+            document.getElementById('click-result').textContent = 'Double click detected!';
+        });
+
+        // Right Click
+        document.getElementById('right-click').addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            document.getElementById('click-result').textContent = 'Right click detected!';
+        });
+
+        // Hover
+        const hoverBox = document.getElementById('hover-box');
+        hoverBox.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#007bff';
+            this.style.color = 'white';
+            this.textContent = 'Hovered! 🎉';
+        });
+        hoverBox.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.color = 'black';
+            this.textContent = 'Hover over me!';
+        });
+
+        // Drag and Drop
+        const dragSource = document.getElementById('drag-source');
+        const dropTarget = document.getElementById('drop-target');
+
+        dragSource.addEventListener('dragstart', function(e) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        });
+
+        dropTarget.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '#d4edda';
+        });
+
+        dropTarget.addEventListener('dragleave', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+
+        dropTarget.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.innerHTML = e.dataTransfer.getData('text/html');
+            this.style.backgroundColor = '#28a745';
+            this.style.color = 'white';
+        });
+
+        // Keyboard
+        document.getElementById('keyboard-input').addEventListener('input', function(e) {
+            document.getElementById('keyboard-output').textContent = 
+                `You typed: "${e.target.value}" (${e.target.value.length} characters)`;
+        });
+    </script>
+}

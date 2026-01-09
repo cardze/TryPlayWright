@@ -1,0 +1,297 @@
+@page
+@model DialogsModel
+@{
+    ViewData["Title"] = "Dialogs & Alerts";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Demonstrate handling of browser dialogs, alerts, confirms, and prompts.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Dialog Examples</h3>
+            
+            <!-- Alert Dialog -->
+            <div class="card mb-3">
+                <div class="card-header">Alert Dialog</div>
+                <div class="card-body">
+                    <button id="show-alert" class="btn btn-primary">Show Alert</button>
+                    <p class="mt-2 text-muted">Simple alert dialog with OK button</p>
+                </div>
+            </div>
+
+            <!-- Confirm Dialog -->
+            <div class="card mb-3">
+                <div class="card-header">Confirm Dialog</div>
+                <div class="card-body">
+                    <button id="show-confirm" class="btn btn-info">Show Confirm</button>
+                    <div id="confirm-result" class="mt-2 alert alert-secondary">
+                        Waiting for confirmation...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prompt Dialog -->
+            <div class="card mb-3">
+                <div class="card-header">Prompt Dialog</div>
+                <div class="card-body">
+                    <button id="show-prompt" class="btn btn-success">Show Prompt</button>
+                    <div id="prompt-result" class="mt-2 alert alert-secondary">
+                        Waiting for input...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Before Unload -->
+            <div class="card mb-3">
+                <div class="card-header">Before Unload Dialog</div>
+                <div class="card-body">
+                    <button id="enable-unload" class="btn btn-warning">Enable Unload Protection</button>
+                    <button id="disable-unload" class="btn btn-secondary">Disable Protection</button>
+                    <p class="mt-2 text-muted">
+                        <small>Try navigating away after enabling - you'll see a confirmation dialog</small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Dialog -->
+            <div class="card mb-3">
+                <div class="card-header">Custom Modal</div>
+                <div class="card-body">
+                    <button id="show-modal" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#customModal">
+                        Show Custom Modal
+                    </button>
+                    <p class="mt-2 text-muted">Bootstrap modal dialog</p>
+                </div>
+            </div>
+
+            <!-- File Dialog -->
+            <div class="card mb-3">
+                <div class="card-header">File Upload Dialog</div>
+                <div class="card-body">
+                    <input type="file" id="file-input" class="form-control" multiple>
+                    <div id="file-result" class="mt-2 alert alert-secondary">
+                        No files selected
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Dialog Handling</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Playwright can automatically handle or dismiss dialogs.
+            </div>
+
+            <pre><code class="language-javascript">// Listen for dialog and accept it
+page.on('dialog', dialog => {
+    console.log(dialog.message());
+    dialog.accept();
+});
+
+// Listen and dismiss
+page.on('dialog', dialog => dialog.dismiss());
+
+// Handle confirm with specific choice
+page.on('dialog', dialog => {
+    if (dialog.type() === 'confirm') {
+        dialog.accept(); // or dialog.dismiss()
+    }
+});
+
+// Handle prompt with input
+page.on('dialog', dialog => {
+    if (dialog.type() === 'prompt') {
+        dialog.accept('My input text');
+    }
+});
+
+// Get dialog details
+page.on('dialog', async dialog => {
+    console.log(`Type: ${dialog.type()}`);
+    console.log(`Message: ${dialog.message()}`);
+    console.log(`Default value: ${dialog.defaultValue()}`);
+    await dialog.accept();
+});
+
+// Handle all dialog types
+page.on('dialog', async dialog => {
+    switch(dialog.type()) {
+        case 'alert':
+            console.log('Alert:', dialog.message());
+            await dialog.accept();
+            break;
+        case 'confirm':
+            console.log('Confirm:', dialog.message());
+            await dialog.accept(); // or dismiss()
+            break;
+        case 'prompt':
+            console.log('Prompt:', dialog.message());
+            await dialog.accept('User input');
+            break;
+        case 'beforeunload':
+            await dialog.accept();
+            break;
+    }
+});
+
+// Wait for dialog to appear
+const dialogPromise = page.waitForEvent('dialog');
+await page.locator('#show-alert').click();
+const dialog = await dialogPromise;
+await dialog.accept();
+
+// Handle file chooser
+const fileChooserPromise = page.waitForEvent('filechooser');
+await page.locator('#file-input').click();
+const fileChooser = await fileChooserPromise;
+await fileChooser.setFiles('path/to/file.pdf');
+
+// Select multiple files
+await fileChooser.setFiles([
+    'file1.pdf',
+    'file2.jpg'
+]);
+
+// Cancel file selection
+await fileChooser.setFiles([]);
+
+// Handle modal dialogs (not browser dialogs)
+await page.locator('[data-bs-toggle="modal"]').click();
+await page.locator('#customModal').waitFor({ state: 'visible' });
+await page.locator('#customModal .btn-primary').click();
+
+// Close modal
+await page.locator('#customModal .btn-close').click();
+await page.locator('#customModal').waitFor({ state: 'hidden' });
+
+// Prevent dialog auto-dismiss (for testing)
+page.on('dialog', dialog => {
+    // Do nothing - dialog stays open
+    // Useful for debugging
+});</code></pre>
+
+            <h4 class="mt-4">Dialog Types</h4>
+            <ul>
+                <li><strong>alert:</strong> Simple message with OK button</li>
+                <li><strong>confirm:</strong> Yes/No question</li>
+                <li><strong>prompt:</strong> Text input request</li>
+                <li><strong>beforeunload:</strong> Page leave confirmation</li>
+            </ul>
+
+            <h4 class="mt-3">Best Practices</h4>
+            <ul>
+                <li>Set up dialog listeners before triggering</li>
+                <li>Always handle or dismiss dialogs</li>
+                <li>Use waitForEvent for predictable handling</li>
+                <li>Test both accept and dismiss scenarios</li>
+                <li>Log dialog messages for debugging</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+<!-- Custom Modal -->
+<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customModalLabel">Custom Modal Dialog</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This is a Bootstrap modal dialog. Unlike browser dialogs (alert, confirm, prompt), 
+                   this is an HTML element that can be interacted with using standard selectors.</p>
+                <p>Playwright can:</p>
+                <ul>
+                    <li>Wait for the modal to appear</li>
+                    <li>Click buttons inside the modal</li>
+                    <li>Fill forms in the modal</li>
+                    <li>Close the modal</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Alert
+        document.getElementById('show-alert').addEventListener('click', function() {
+            alert('This is an alert dialog!\n\nPlaywright can handle this automatically.');
+        });
+
+        // Confirm
+        document.getElementById('show-confirm').addEventListener('click', function() {
+            const result = confirm('Do you want to proceed?');
+            const resultDiv = document.getElementById('confirm-result');
+            if (result) {
+                resultDiv.className = 'mt-2 alert alert-success';
+                resultDiv.textContent = '✓ You clicked OK';
+            } else {
+                resultDiv.className = 'mt-2 alert alert-danger';
+                resultDiv.textContent = '✗ You clicked Cancel';
+            }
+        });
+
+        // Prompt
+        document.getElementById('show-prompt').addEventListener('click', function() {
+            const name = prompt('What is your name?', 'John Doe');
+            const resultDiv = document.getElementById('prompt-result');
+            if (name) {
+                resultDiv.className = 'mt-2 alert alert-success';
+                resultDiv.textContent = `Hello, ${name}!`;
+            } else {
+                resultDiv.className = 'mt-2 alert alert-warning';
+                resultDiv.textContent = 'You cancelled the prompt';
+            }
+        });
+
+        // Before Unload
+        let unloadEnabled = false;
+        
+        document.getElementById('enable-unload').addEventListener('click', function() {
+            unloadEnabled = true;
+            this.classList.replace('btn-warning', 'btn-success');
+            this.textContent = 'Protection Enabled ✓';
+        });
+
+        document.getElementById('disable-unload').addEventListener('click', function() {
+            unloadEnabled = false;
+            document.getElementById('enable-unload').classList.replace('btn-success', 'btn-warning');
+            document.getElementById('enable-unload').textContent = 'Enable Unload Protection';
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (unloadEnabled) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // File Input
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const resultDiv = document.getElementById('file-result');
+            
+            if (files.length > 0) {
+                resultDiv.className = 'mt-2 alert alert-success';
+                resultDiv.innerHTML = '<strong>Selected files:</strong><br>' + 
+                    files.map(f => `📄 ${f.name} (${(f.size / 1024).toFixed(2)} KB)`).join('<br>');
+            } else {
+                resultDiv.className = 'mt-2 alert alert-secondary';
+                resultDiv.textContent = 'No files selected';
+            }
+        });
+    </script>
+}

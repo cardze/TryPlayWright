@@ -1,0 +1,235 @@
+@page
+@model ScreenshotsModel
+@{
+    ViewData["Title"] = "Screenshots & Traces";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Learn about capturing screenshots and generating test traces with Playwright.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Visual Test Targets</h3>
+            
+            <!-- Colorful Elements -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">Screenshot Target Area</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="p-3 bg-danger text-white text-center mb-2">Red</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-success text-white text-center mb-2">Green</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-info text-white text-center mb-2">Blue</div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning mt-2">
+                        ⚠️ This is a test element for screenshots
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart-like Element -->
+            <div class="card mb-3">
+                <div class="card-header">Visual Component</div>
+                <div class="card-body">
+                    <canvas id="demo-chart" width="400" height="200" style="border: 1px solid #ddd;"></canvas>
+                </div>
+            </div>
+
+            <!-- Hidden Element -->
+            <div class="card mb-3">
+                <div class="card-header">Toggle Visibility</div>
+                <div class="card-body">
+                    <button id="toggle-element" class="btn btn-primary">Toggle Element</button>
+                    <div id="toggleable" class="alert alert-info mt-2">
+                        This element can be toggled! 👁️
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animation -->
+            <div class="card mb-3">
+                <div class="card-header">Animated Element</div>
+                <div class="card-body">
+                    <button id="start-animation" class="btn btn-success">Start Animation</button>
+                    <div id="animated-box" class="mt-3 p-3 bg-primary text-white text-center" 
+                         style="width: 100px; transition: all 0.5s;">
+                        Animate Me!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Playwright Screenshot Examples</h3>
+            
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Screenshots are crucial for visual regression testing.
+            </div>
+
+            <pre><code class="language-javascript">// Full page screenshot
+await page.screenshot({ path: 'screenshot.png' });
+
+// Screenshot with options
+await page.screenshot({ 
+    path: 'screenshot.png',
+    fullPage: true,
+    type: 'png' // or 'jpeg'
+});
+
+// Element screenshot
+await page.locator('.card').screenshot({ 
+    path: 'element.png' 
+});
+
+// Screenshot to buffer
+const buffer = await page.screenshot();
+
+// Screenshot with clip
+await page.screenshot({
+    path: 'clipped.png',
+    clip: { x: 0, y: 0, width: 100, height: 100 }
+});
+
+// Hide elements before screenshot
+await page.locator('.navbar').evaluate(
+    element => element.style.visibility = 'hidden'
+);
+await page.screenshot({ path: 'no-navbar.png' });
+
+// Screenshot with device emulation
+const iPhone = playwright.devices['iPhone 12'];
+await context.newPage(iPhone);
+await page.goto('https://example.com');
+await page.screenshot({ path: 'mobile.png' });
+
+// Video Recording
+const context = await browser.newContext({
+    recordVideo: {
+        dir: 'videos/',
+        size: { width: 1280, height: 720 }
+    }
+});
+
+// Trace Recording (for debugging)
+await context.tracing.start({ 
+    screenshots: true, 
+    snapshots: true 
+});
+
+// ... perform actions ...
+
+await context.tracing.stop({ 
+    path: 'trace.zip' 
+});
+
+// View trace with:
+// npx playwright show-trace trace.zip
+
+// Visual comparison testing
+await expect(page).toHaveScreenshot('homepage.png');
+
+// With threshold for differences
+await expect(page).toHaveScreenshot('homepage.png', {
+    maxDiffPixels: 100
+});
+
+// Mask dynamic content
+await expect(page).toHaveScreenshot({
+    mask: [page.locator('.timestamp')]
+});
+
+// PDF generation
+await page.pdf({ 
+    path: 'page.pdf',
+    format: 'A4' 
+});</code></pre>
+
+            <h4 class="mt-4">Screenshot Features</h4>
+            <ul>
+                <li>Full page or element-specific screenshots</li>
+                <li>PNG and JPEG formats supported</li>
+                <li>Automatic scrolling for full page captures</li>
+                <li>Video recording of test execution</li>
+                <li>Trace files for detailed debugging</li>
+                <li>Visual comparison testing</li>
+            </ul>
+
+            <h4 class="mt-3">Trace Features</h4>
+            <ul>
+                <li>Records every action and event</li>
+                <li>Captures screenshots at each step</li>
+                <li>Shows network activity</li>
+                <li>Displays console logs</li>
+                <li>Time-travel debugging</li>
+                <li>Shareable trace files</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-page="/Index" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Draw on canvas
+        const canvas = document.getElementById('demo-chart');
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a simple bar chart
+        ctx.fillStyle = '#007bff';
+        ctx.fillRect(50, 150, 60, -100);
+        ctx.fillStyle = '#28a745';
+        ctx.fillRect(150, 150, 60, -130);
+        ctx.fillStyle = '#ffc107';
+        ctx.fillRect(250, 150, 60, -80);
+        
+        // Labels
+        ctx.fillStyle = '#000';
+        ctx.font = '12px Arial';
+        ctx.fillText('Q1', 65, 170);
+        ctx.fillText('Q2', 165, 170);
+        ctx.fillText('Q3', 265, 170);
+
+        // Toggle visibility
+        document.getElementById('toggle-element').addEventListener('click', function() {
+            const element = document.getElementById('toggleable');
+            if (element.style.display === 'none') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        });
+
+        // Animation
+        document.getElementById('start-animation').addEventListener('click', function() {
+            const box = document.getElementById('animated-box');
+            const colors = ['bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info'];
+            let position = 0;
+            let colorIndex = 0;
+            
+            const animate = setInterval(() => {
+                position += 20;
+                colorIndex = (colorIndex + 1) % colors.length;
+                
+                box.style.marginLeft = position + 'px';
+                box.className = `mt-3 p-3 text-white text-center ${colors[colorIndex]}`;
+                
+                if (position >= 200) {
+                    clearInterval(animate);
+                    setTimeout(() => {
+                        box.style.marginLeft = '0px';
+                        box.className = 'mt-3 p-3 bg-primary text-white text-center';
+                    }, 500);
+                }
+            }, 200);
+        });
+    </script>
+}
