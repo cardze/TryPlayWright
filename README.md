@@ -55,11 +55,7 @@ dotnet run
 
 5. Open your browser and navigate to:
 ```
-https://localhost:5001
-```
-or
-```
-http://localhost:5000
+http://localhost:5076
 ```
 
 ### Building for Production
